@@ -9,11 +9,38 @@ let playerPosition = 0; //range from -1 (left edge) to +1 (right edge)
 let playerDistance = 100000;
 let playerSpeed = 1;
 
+
+
 canvas.height = SCREEN_HEIGHT;
 canvas.width = SCREEN_WIDTH;
 canvas.style.background = "blue";
 
 let d;
+
+class trackVector{
+    constructor(curve, distance){
+        this.curve = curve;
+        this.distance = distance;
+    }
+
+}
+
+let track = [new trackVector(0, 200)];
+track.push(new trackVector(1, 200));
+track.push(new trackVector(0, 200));
+track.push(new trackVector(-1, 200));
+track.push(new trackVector(1, 200));
+track.push(new trackVector(0, 200));
+track.push(new trackVector(0.3, 200));
+track.push(new trackVector(-1, 200));
+track.push(new trackVector(0.3, 200));
+track.push(new trackVector(-0.5, 200));
+
+let trackOffset = 0;
+let trackSection = 0;
+let targetCurvature = 0;
+let currentCurvature = 0;
+
 
 const grass = ctx.createImageData(1,1); // only do this once per page
 d  = grass.data;
@@ -60,7 +87,23 @@ d[3] = 255;
 const carImage = new Image();
 carImage.src = "resources/images/car.png";
 
+
+document.onkeydown = function (e) {
+    switch (e.keyCode) {
+        case 37:
+            playerPosition -= 0.03;
+            break;
+        case 39:
+            playerPosition += 0.03;
+            break;
+    }
+};
+
 function updateScreen() {
+    if (trackSection > track.length) trackSection = 0;
+    targetCurvature = track[Math.floor(trackSection)].curve;
+
+
     for (let y = 0; y < SCREEN_HEIGHT; y ++)
     {
         let perspective = y / (SCREEN_HEIGHT / 2);
@@ -71,7 +114,9 @@ function updateScreen() {
         {
 
 
-            let roadMiddlePoint = 0.5;
+            let roadMiddlePoint = 0.5 + currentCurvature * Math.pow((1-perspective), 3);
+            let curvatureDifference = targetCurvature - currentCurvature;
+            currentCurvature += curvatureDifference * 0.00001;
             //0.1 - minimum road width
             let roadWidth = 0.1 + perspective * 0.8;
             let curbWidth = roadWidth * 0.15;
@@ -101,16 +146,17 @@ function updateScreen() {
                 currentCurb = curbDark;
             }
 
+            //the random >=/<=/+1 are for fixing empty pixels on places where x rounds
             if (x >= 0 && x < leftGrassBound) {
                 ctx.putImageData(currentGrass, x, row);
             }
-            if (x > leftGrassBound && x < leftCurbBound) {
+            if (x > leftGrassBound-1 && x < leftCurbBound) {
                 ctx.putImageData(currentCurb, x, row);
             }
             if (x >= leftCurbBound && x <= rightCurbBound) {
                 ctx.putImageData(road, x, row);
             }
-            if (x > rightCurbBound && x < rightGrassBound) {
+            if (x > rightCurbBound && x < rightGrassBound+1) {
                 ctx.putImageData(currentCurb, x, row);
             }
             if (x > rightGrassBound && x < SCREEN_WIDTH) {
@@ -126,10 +172,11 @@ function updateScreen() {
 
         }
     }
+    trackSection+=0.1;
 }
 
 setTimeout(() => {
     setInterval(()=>{
         updateScreen();
-    }, 10);
+    }, 100);
 }, 2000);
