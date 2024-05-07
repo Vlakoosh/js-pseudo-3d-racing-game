@@ -196,8 +196,18 @@ function updateScreen() {
     trackSection+=0.01;
 }
 
-setTimeout(() => {
-    setInterval(()=>{
-        updateScreen();
-    }, 17);
-}, 2000);
+var img = new Image();
+img.src = "resources/images/startIcon.png";
+img.onload = function () {
+    ctx.drawImage(img, SCREEN_WIDTH/2 - img.width/2, SCREEN_HEIGHT/2 - img.height/2);
+}
+
+let start = false
+canvas.addEventListener("click", ()=>{
+    if (!start){
+        setInterval(()=>{
+            updateScreen();
+        }, 17);
+    }
+})
+
