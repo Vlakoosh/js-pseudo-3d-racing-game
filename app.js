@@ -252,6 +252,15 @@ function updateScreen() {
         ctx.stroke(); // Render the path
     }
 
+    if(playerPosition > 0.95) {
+        playerPosition = 0.95;
+        steeringAngle = -0.001;
+    }
+    if(playerPosition < -0.95) {
+        playerPosition = -0.95;
+        steeringAngle = 0.001;
+    }
+
     let carY = SCREEN_HEIGHT - carImage.height - 3;
     let carX = SCREEN_WIDTH / 2 + (SCREEN_WIDTH * playerPosition / 2) - carImage.width/2;
 
