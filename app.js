@@ -26,9 +26,6 @@ let upKeyPressed = false;
 let backgroundPhase= 0;
 
 
-
-
-
 let d;
 
 class trackVector{
@@ -165,30 +162,30 @@ function updateScreen() {
     for (let y = 0; y < SCREEN_HEIGHT; y ++)
     {
         let perspective = y / (SCREEN_HEIGHT / 2);
-        let grassColor = Math.sin((20 * Math.pow(1-perspective, 3)) + playerDistance * 0.3);
-        let curbColor = Math.sin(80 * (Math.pow(1-perspective, 3)) + playerDistance * 0.3);
+        let grassColor = Math.sin(((20 * Math.pow(1-perspective, 3)) + playerDistance * 0.3)/ (SCREEN_WIDTH/160));
+        let curbColor = Math.sin((80 * (Math.pow(1-perspective, 3)) + playerDistance * 0.3* (SCREEN_WIDTH/160))/ (SCREEN_WIDTH/160));
 
         for (let x = 0; x < SCREEN_WIDTH; x++)
         {
 
             let roadMiddlePoint = 0.5 + currentCurvature * Math.pow((1-perspective), 3);
             let curvatureDifference = targetCurvature - currentCurvature;
-            currentCurvature += curvatureDifference * 0.0000003 * playerSpeed;
-            playerPosition -= currentCurvature * 0.000001 * playerSpeed;
+            currentCurvature += (curvatureDifference * 0.0000003 * playerSpeed) / (SCREEN_WIDTH/160);
+            playerPosition -= (currentCurvature * 0.000001 * playerSpeed) / (SCREEN_WIDTH/160);
             //0.1 - minimum road width
-            let roadWidth = 0.08 + perspective * 0.8;
-            let curbWidth = roadWidth * 0.15;
+            let roadWidth = 0.1 + perspective * 1.3;
+            let curbWidth = roadWidth * 0.07;
 
             roadWidth *= 0.5;
 
-            let leftGrassBound = (roadMiddlePoint - roadWidth - curbWidth) * SCREEN_WIDTH;
-            let leftCurbBound = (roadMiddlePoint - roadWidth) * SCREEN_WIDTH;
-            let laneSplit1Left = (roadMiddlePoint - roadWidth/3) * SCREEN_WIDTH - 2;
-            let laneSplit1Right = (roadMiddlePoint - roadWidth/3) * SCREEN_WIDTH;
-            let laneSplit2Left = (roadMiddlePoint + roadWidth/3) * SCREEN_WIDTH - 2;
-            let laneSplit2Right = (roadMiddlePoint + roadWidth/3) * SCREEN_WIDTH;
-            let rightCurbBound = (roadMiddlePoint + roadWidth) * SCREEN_WIDTH;
-            let rightGrassBound = (roadMiddlePoint + roadWidth + curbWidth) * SCREEN_WIDTH;
+            let leftGrassBound = (roadMiddlePoint - roadWidth/2 - curbWidth) * SCREEN_WIDTH;
+            let leftCurbBound = (roadMiddlePoint - roadWidth/2) * SCREEN_WIDTH;
+            let laneSplit1Left = (roadMiddlePoint - roadWidth/3/2) * SCREEN_WIDTH - 1;
+            let laneSplit1Right = (roadMiddlePoint - roadWidth/3/2) * SCREEN_WIDTH;
+            let laneSplit2Left = (roadMiddlePoint + roadWidth/3/2) * SCREEN_WIDTH - 1;
+            let laneSplit2Right = (roadMiddlePoint + roadWidth/3/2) * SCREEN_WIDTH;
+            let rightCurbBound = (roadMiddlePoint + roadWidth/2) * SCREEN_WIDTH;
+            let rightGrassBound = (roadMiddlePoint + roadWidth/2 + curbWidth) * SCREEN_WIDTH;
 
 
             let row = SCREEN_HEIGHT / 2 + y;
@@ -231,7 +228,7 @@ function updateScreen() {
                 buffer[(x + row*SCREEN_WIDTH)*4 + 2] = road.data[2];
                 buffer[(x + row*SCREEN_WIDTH)*4 + 3] = 255;
             }
-            if (x > laneSplit1Left && x < laneSplit1Right){
+            if (x > laneSplit1Left && x <= laneSplit1Right){
                 buffer[(x + row*SCREEN_WIDTH)*4] = currentRoadLine.data[0];
                 buffer[(x + row*SCREEN_WIDTH)*4 + 1] = currentRoadLine.data[1];
                 buffer[(x + row*SCREEN_WIDTH)*4 + 2] = currentRoadLine.data[2];
@@ -243,7 +240,7 @@ function updateScreen() {
                 buffer[(x + row*SCREEN_WIDTH)*4 + 2] = road.data[2];
                 buffer[(x + row*SCREEN_WIDTH)*4 + 3] = 255;
             }
-            if (x > laneSplit2Left && x < laneSplit2Right){
+            if (x >= laneSplit2Left && x < laneSplit2Right){
                 buffer[(x + row*SCREEN_WIDTH)*4] = currentRoadLine.data[0];
                 buffer[(x + row*SCREEN_WIDTH)*4 + 1] = currentRoadLine.data[1];
                 buffer[(x + row*SCREEN_WIDTH)*4 + 2] = currentRoadLine.data[2];
@@ -262,10 +259,10 @@ function updateScreen() {
                 buffer[(x + row*SCREEN_WIDTH)*4 + 3] = 255;
             }
             if (x > rightGrassBound && x < SCREEN_WIDTH) {
-                buffer[(x + row*160)*4] = currentGrass.data[0];
-                buffer[(x + row*160)*4 + 1] = currentGrass.data[1];
-                buffer[(x + row*160)*4 + 2] = currentGrass.data[2];
-                buffer[(x + row*160)*4 + 3] = 255;
+                buffer[(x + row*SCREEN_WIDTH)*4] = currentGrass.data[0];
+                buffer[(x + row*SCREEN_WIDTH)*4 + 1] = currentGrass.data[1];
+                buffer[(x + row*SCREEN_WIDTH)*4 + 2] = currentGrass.data[2];
+                buffer[(x + row*SCREEN_WIDTH)*4 + 3] = 255;
             }
 
 
@@ -275,11 +272,11 @@ function updateScreen() {
         }
     }
     ctx.putImageData(bufferData, 0, 0);
-    backgroundPhase += currentCurvature*0.2*playerSpeed;
+    backgroundPhase += (currentCurvature*0.2*playerSpeed) * (SCREEN_WIDTH/160);
     for(let x = 0; x < SCREEN_WIDTH; x++){
         let hill1Height = Math.abs(Math.sin(x * 0.02 + backgroundPhase * 0.08)) * 20 * SCREEN_WIDTH/160;
-        let hill2Height = Math.abs(Math.sin(x * 0.04 + backgroundPhase * 0.4 + 2)) * 15  * SCREEN_WIDTH/160;
-        let forestHeight = Math.abs(Math.sin(x * 0.4 + backgroundPhase * 5 + 2)) * 1.4  * SCREEN_WIDTH/160;
+        let hill2Height = Math.abs(Math.sin(x * 0.04 + backgroundPhase * 0.4 + 2)) * 15 * SCREEN_WIDTH/160;
+        let forestHeight = Math.abs(Math.sin(x * 0.4 + backgroundPhase * 5 + 2)) * 1.4 * SCREEN_WIDTH/160;
 
         ctx.beginPath(); // Start a new path
         ctx.lineWidth = 2;
