@@ -1,9 +1,8 @@
+canvas = document.getElementById("canvas");
+ctx = canvas.getContext("2d");
+ctx.imageSmoothingEnabled = false;
 const SCREEN_WIDTH = 160;
 const SCREEN_HEIGHT = 100;
-
-const canvas = document.getElementById("canvas");
-let ctx = canvas.getContext("2d");
-ctx.imageSmoothingEnabled = false;
 canvas.height = SCREEN_HEIGHT;
 canvas.width = SCREEN_WIDTH;
 canvas.style.background = "rgb(50,50,230)";
@@ -11,17 +10,11 @@ canvas.style.background = "rgb(50,50,230)";
 const carImage = new Image();
 carImage.src = "resources/images/car.png";
 
-
 const MAX_SPEED = 10
-
 let playerPosition = 0; //range from -1 (left edge) to +1 (right edge)
 let playerDistance = 0;
 let playerSpeed = 0; //range from 0 to 1;
 let steeringAngle = 0; //range from -1 to 1
-
-let leftKeyPressed = false;
-let rightKeyPressed = false;
-let upKeyPressed = false;
 
 let backgroundPhase= 0;
 
@@ -47,7 +40,6 @@ track.push(new trackVector(-1, 2000));
 track.push(new trackVector(0.3, 2000));
 track.push(new trackVector(-0.5, 2000));
 
-let trackOffset = 0;
 let trackSection = 0;
 let targetCurvature = 0;
 let currentCurvature = 0;
@@ -56,47 +48,9 @@ let currentCurvature = 0;
 let bufferData = ctx.createImageData(SCREEN_WIDTH, SCREEN_HEIGHT);
 let buffer = bufferData.data;
 
-const grass = ctx.createImageData(1,1); // only do this once per page
-d  = grass.data;
-d[0] = 0;
-d[1] = 200;
-d[2] = 0;
-d[3] = 255;
-
-const grassDark = ctx.createImageData(1,1); // only do this once per page
-d  = grassDark.data;
-d[0] = 0;
-d[1] = 150;
-d[2] = 0;
-d[3] = 255;
-
-const curbDark = ctx.createImageData(1,1); // only do this once per page
-d  = curbDark.data;
-d[0] = 214;
-d[1] = 4;
-d[2] = 4;
-d[3] = 255;
-
-const curbLight = ctx.createImageData(1,1); // only do this once per page
-d  = curbLight.data;
-d[0] = 214;
-d[1] = 200;
-d[2] = 200;
-d[3] = 255;
-
-const road = ctx.createImageData(1,1); // only do this once per page
-d  = road.data;
-d[0] = 150;
-d[1] = 150;
-d[2] = 150;
-d[3] = 255;
-
-const roadLine = ctx.createImageData(1,1); // only do this once per page
-d  = roadLine.data;
-d[0] = 190;
-d[1] = 190;
-d[2] = 190;
-d[3] = 255;
+let leftKeyPressed = false;
+let rightKeyPressed = false;
+let upKeyPressed = false;
 
 document.onkeydown = function (e) {
     if(e.key === "ArrowLeft"){
