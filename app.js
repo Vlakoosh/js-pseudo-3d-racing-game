@@ -111,7 +111,7 @@ function updateScreen() {
 
     playerPosition += steeringAngle * SCREEN_WIDTH/160;
     playerDistance += playerSpeed*2;
-
+    //
     for (let y = 0; y < SCREEN_HEIGHT; y ++)
     {
         let perspective = y / (SCREEN_HEIGHT / 2);
