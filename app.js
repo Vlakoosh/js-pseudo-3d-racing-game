@@ -1,6 +1,5 @@
 canvas = document.getElementById("canvas");
 ctx = canvas.getContext("2d");
-ctx.imageSmoothingEnabled = false;
 const SCREEN_WIDTH = 160;
 const SCREEN_HEIGHT = 100;
 canvas.height = SCREEN_HEIGHT;
@@ -90,10 +89,10 @@ function updateScreen() {
     }
     let angleDifference = targetAngle - steeringAngle;
     if (targetAngle === 0){
-        steeringAngle += angleDifference * 0.09;
+        steeringAngle += angleDifference * 0.09 / (SCREEN_HEIGHT/160);
     }
     else{
-        steeringAngle += angleDifference * 0.0005;
+        steeringAngle += angleDifference * 0.0005 / (SCREEN_HEIGHT/160);
     }
 
     let targetSpeed = 0;
@@ -110,7 +109,7 @@ function updateScreen() {
 
     playerSpeed += speedDifference * 0.05;
 
-    playerPosition += steeringAngle;
+    playerPosition += steeringAngle * SCREEN_WIDTH/160;
     playerDistance += playerSpeed*2;
 
     for (let y = 0; y < SCREEN_HEIGHT; y ++)
@@ -123,7 +122,7 @@ function updateScreen() {
         {
 
             let roadMiddlePoint = 0.5 + currentCurvature * Math.pow((1-perspective), 3);
-            let curvatureDifference = targetCurvature - currentCurvature;
+            let curvatureDifference = (targetCurvature - currentCurvature) / (SCREEN_WIDTH/160);
             currentCurvature += (curvatureDifference * 0.0000003 * playerSpeed) / (SCREEN_WIDTH/160);
             playerPosition -= (currentCurvature * 0.000001 * playerSpeed) / (SCREEN_WIDTH/160);
             //0.1 - minimum road width
@@ -134,10 +133,10 @@ function updateScreen() {
 
             let leftGrassBound = (roadMiddlePoint - roadWidth/2 - curbWidth) * SCREEN_WIDTH;
             let leftCurbBound = (roadMiddlePoint - roadWidth/2) * SCREEN_WIDTH;
-            let laneSplit1Left = (roadMiddlePoint - roadWidth/3/2) * SCREEN_WIDTH - 1;
+            let laneSplit1Left = (roadMiddlePoint - roadWidth/3/2) * SCREEN_WIDTH - roadWidth*0.03*SCREEN_WIDTH;
             let laneSplit1Right = (roadMiddlePoint - roadWidth/3/2) * SCREEN_WIDTH;
-            let laneSplit2Left = (roadMiddlePoint + roadWidth/3/2) * SCREEN_WIDTH - 1;
-            let laneSplit2Right = (roadMiddlePoint + roadWidth/3/2) * SCREEN_WIDTH;
+            let laneSplit2Left = (roadMiddlePoint + roadWidth/3/2) * SCREEN_WIDTH;
+            let laneSplit2Right = (roadMiddlePoint + roadWidth/3/2) * SCREEN_WIDTH + (roadWidth*0.03)*SCREEN_WIDTH;
             let rightCurbBound = (roadMiddlePoint + roadWidth/2) * SCREEN_WIDTH;
             let rightGrassBound = (roadMiddlePoint + roadWidth/2 + curbWidth) * SCREEN_WIDTH;
 
@@ -253,24 +252,26 @@ function updateScreen() {
     }
 
     if(playerPosition > 0.95) {
-        playerPosition = 0.95;
+        playerPosition = 0.947;
         steeringAngle = -0.001;
     }
     if(playerPosition < -0.95) {
-        playerPosition = -0.95;
+        playerPosition = -0.953;
         steeringAngle = 0.001;
     }
 
-    let carY = SCREEN_HEIGHT - carImage.height - 3;
-    let carX = SCREEN_WIDTH / 2 + (SCREEN_WIDTH * playerPosition / 2) - carImage.width/2;
+    let carY = SCREEN_HEIGHT - carImage.height*SCREEN_HEIGHT/100 - 3;
+    let carX = SCREEN_WIDTH / 2 + (SCREEN_WIDTH * playerPosition / 2) - (carImage.width/2)*SCREEN_WIDTH/160;
 
-    ctx.drawImage(carImage, carX, carY);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(carImage, 0, 0, carImage.width, carImage.height, carX, carY, carImage.width*SCREEN_WIDTH/160, carImage.height*SCREEN_HEIGHT/100);
     trackSection+=0.01*playerSpeed;
 }
 
 var img = new Image();
 img.src = "resources/images/startIcon.png";
 img.onload = function () {
+    ctx.imageSmoothingEnabled = false;
     ctx.drawImage(img, SCREEN_WIDTH/2 - img.width/2, SCREEN_HEIGHT/2 - img.height/2);
 }
 
