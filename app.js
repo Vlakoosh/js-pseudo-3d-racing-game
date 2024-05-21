@@ -4,12 +4,12 @@ const SCREEN_WIDTH = 160;
 const SCREEN_HEIGHT = 100;
 canvas.height = SCREEN_HEIGHT;
 canvas.width = SCREEN_WIDTH;
-canvas.style.background = "rgb(50,50,230)";
+canvas.style.background = "rgb(50,50,230)"; //blue
 
 const carImage = new Image();
 carImage.src = "resources/images/car.png";
 
-const MAX_SPEED = 10
+const MAX_SPEED = 10;
 let playerPosition = 0; //range from -1 (left edge) to +1 (right edge)
 let playerDistance = 0;
 let playerSpeed = 0; //range from 0 to 1;
@@ -19,7 +19,8 @@ let backgroundPhase= 0;
 
 
 let d;
-
+//trackVector is a piece of the track with a curviture and a distance. 
+//Curviture is the sharpness of the turn
 class trackVector{
     constructor(curve, distance){
         this.curve = curve;
@@ -28,6 +29,7 @@ class trackVector{
 
 }
 
+//initialize a demo track
 let track = [new trackVector(0, 200)];
 track.push(new trackVector(1, 2000));
 track.push(new trackVector(0, 2000));
@@ -43,7 +45,7 @@ let trackSection = 0;
 let targetCurvature = 0;
 let currentCurvature = 0;
 
-
+//make a buffer to optimize rendering
 let bufferData = ctx.createImageData(SCREEN_WIDTH, SCREEN_HEIGHT);
 let buffer = bufferData.data;
 
